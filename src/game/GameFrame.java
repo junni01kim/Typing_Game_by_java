@@ -21,11 +21,11 @@ import javax.swing.JToolBar;
 import game.GameGround.RoundThread;
 
 // GameFrame 클래스는 게임 창의 패널들을 관리하는 클래스이다.
-
 public class GameFrame extends JFrame {
 	private GameFrame gameFrame = this;
 	private JButton bPlay = new JButton("Play");
-	JButton bDiffculty = new JButton("Easy");
+	private JButton bDiffculty = new JButton("Easy");
+	private JButton bPause = new JButton("Pause");
 	private HashMap<String,Account> accountData = new HashMap<>();
 	private LoginSource loginSource = new LoginSource(this);
 	private RankingSource rankingSource = new RankingSource();
@@ -97,6 +97,10 @@ public class GameFrame extends JFrame {
 		bPlay.addActionListener(new PlayActionListener());
 		bar.add(bPlay);
 		
+		// 일시정지 버튼: 게임이 일시정지
+		bPause.addActionListener(new PauseActionListener());
+		bar.add(bPause);
+		
 		// 로그인 버튼: 계정을 연결
 		JButton bSignin = new JButton("Sign in");
 		bSignin.addActionListener(new SignInActionListener());
@@ -133,8 +137,44 @@ public class GameFrame extends JFrame {
 			// Stop 버튼을 누르면 Play가 된다.
 			// Stop 버튼은 모든 스레드를 한번에 종료시킨다.
 			else {
+				// 예외처리: 만약 일시정지라면 일시정지를 제거한다.
+				if(bPause.getText().equals("Resume")) {
+					for(int i=0; i<gameGround.getWordThreadLength(); i++) {
+						gameGround.getWordThread(i).resumeGame();
+					}
+					bPause.setText("Pause");
+				}
+				
 				myButton.setText("Play");
 				gameGround.getRoundThread().delete();
+			}
+		}
+	}
+	
+	// 회원가입 버튼: PauseDialog를 생성한다.
+	private class PauseActionListener implements ActionListener {
+		JButton myButton;
+		public void actionPerformed(ActionEvent e) {
+			// 예외처리: 일시정지는 게임이 시작되야만 실행된다.
+			if(bPlay.getText().equals("Play"))
+				return;
+			
+			myButton = (JButton)e.getSource();
+			// Pause 버튼이 눌리면 Resume버튼이 되고
+			// Pause 버튼은 게임을 일시정지한다.
+			if(myButton.getText().equals("Pause")) {
+				for(int i=0; i<gameGround.getWordThreadLength(); i++) {
+					gameGround.getWordThread(i).pauseGame();
+				}
+				myButton.setText("Resume");
+			}
+			// Resume 버튼을 누르면 게임이 재개 된다.
+			else {
+				for(int i=0; i<gameGround.getWordThreadLength(); i++) {
+					gameGround.getWordThread(i).resumeGame();
+				}
+				myButton.setText("Pause");
+				
 			}
 		}
 	}

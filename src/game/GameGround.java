@@ -26,6 +26,8 @@ public class GameGround extends JPanel{
 	// getter 함수
 	public int getLabelLength() {return label.length;}
 	public RoundThread getRoundThread() {return roundThread;}
+	public int getWordThreadLength() {return th.length;}
+	public WordThread getWordThread(int index) {return th[index];}
 	
 	@Override
 	public void paintComponent(Graphics g) {
@@ -108,10 +110,22 @@ public class GameGround extends JPanel{
 		private int wordThreadStagingCounter = label.length;
 		private int spawnSpeed;
 		private boolean flag = false;
+		private boolean pauseFlag = false;
 		
 		public void delete() {
 			flag = true;
 		}
+		
+		synchronized private void checkWait() {
+			if(pauseFlag == true) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		// 생성자
 		public RoundThread(int spawnSpeed) {
 			this.spawnSpeed = spawnSpeed;
@@ -131,6 +145,7 @@ public class GameGround extends JPanel{
 				th[i] = new WordThread(i);
 			}
 		}
+		
 		@Override
 		public void run() {
 			// 스레드의 개수는 Label의 개수를 따라간다.
@@ -158,10 +173,11 @@ public class GameGround extends JPanel{
 	}
 
 	// 각 단어의 Label에 적용되는 스레드
-	private class WordThread extends Thread {
+	public class WordThread extends Thread {
 		int index;
 		// 스레드 제거를 위한 flag
 		private boolean deleteFlag = false;
+		private boolean pauseFlag = false;
 		
 		// 생성자
 		public WordThread(int index) {
@@ -173,36 +189,63 @@ public class GameGround extends JPanel{
 			deadLabelCount++;
 			deleteFlag = true;
 		}
+
+		// 스레드 일시정지
+		public void pauseGame() {
+			pauseFlag = true;
+		}
+		
+		// 스레드 재개
+		synchronized public void resumeGame() {
+			pauseFlag = false;
+			this.notify();
+		}
+		
+		// 스레드 일시정지 체크함수
+		synchronized private void checkWait() {
+			if(pauseFlag == true) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		@Override
 		public void run() {
 			while(true) {
-				try {
-					// Label은 y좌표 380까지 내려오면 삭제된다. (테마가 시험 문제라 감점은 없습니다.)
-					if(label[index].getY()>380) {
-						scorePanel.printTextScorePanel(label[index].getText(), index, false);
-						delete();
-					}
-					
-					label[index].setLocation(label[index].getX(), label[index].getY()+10);
-					
-					// 삭제되는 경우 실행되는 코드
-					if(deleteFlag == true) {
-						// 마지막 스레드가 삭제될 때만 진행
-						if(deadLabelCount == 20) {
-							// 비공개된 점수 공개
-							scorePanel.openScoreLabel();
-							endGame();
+				checkWait();
+				if(!pauseFlag) {
+					try {
+						// Label은 y좌표 380까지 내려오면 삭제된다. (테마가 시험 문제라 감점은 없습니다.)
+						if(label[index].getY()>380) {
+							scorePanel.printTextScorePanel(label[index].getText(), index, false);
+							delete();
 						}
-						Container c = label[index].getParent();
-						c.remove(label[index]);
-						c.repaint();
+						
+						label[index].setLocation(label[index].getX(), label[index].getY()+10);
+						
+						// 삭제되는 경우 실행되는 코드
+						if(deleteFlag == true) {
+							Container c = label[index].getParent();
+							c.remove(label[index]);
+							c.repaint();
+							
+							// 마지막 스레드가 삭제될 때만 진행
+							if(deadLabelCount == 20) {
+								// 비공개된 점수 공개
+								scorePanel.openScoreLabel();
+								endGame();
+							}
+							return;
+						}
+						
+						// 1초에 한번씩 드롭
+						sleep(1000);
+					} catch (InterruptedException e) {
 						return;
 					}
-					// 1초에 한번씩 드롭
-					sleep(1000);
-				} catch (InterruptedException e) {
-					return;
 				}
 			}
 		}
