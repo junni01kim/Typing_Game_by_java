@@ -1,7 +1,6 @@
 package game;
 
 // Account 클래스는 닉네임을 기준으로 플레이어 정보를 기록한다.
-
 public class Account {
 	private String nickname;
 	private int rank;

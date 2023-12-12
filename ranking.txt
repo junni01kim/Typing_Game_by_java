@@ -1,5 +1,7 @@
-nameE/3/40/5/nameE
-nameD/5/20/2/hi
-nameC/4/30/2/성공
-nameB/2/40/3/환영합니다.
-nameA/1/50/2/어렵다
+nameF/7/1/2/helloWorld
+nameE/7/2/5/nameE
+nameD/7/3/2/hi
+nameC/6/4/2/성공
+nameB/5/5/3/환영합니다.
+nameA/2/60/2/영어 공부좀 하세요.
+김명준/4/50/1/훌륭합니다!

@@ -142,7 +142,8 @@ public class GameGround extends JPanel{
 				label[i].setSize(100,20);
 
 				label[i].setLocation((int)(5+Math.random()*400),10);
-				th[i] = new WordThread(i);
+				// i는 스레드의 인덱스 spawnSpeed/2는 드랍 속도
+				th[i] = new WordThread(i, spawnSpeed);
 			}
 		}
 		
@@ -178,10 +179,12 @@ public class GameGround extends JPanel{
 		// 스레드 제거를 위한 flag
 		private boolean deleteFlag = false;
 		private boolean pauseFlag = false;
+		int dropSpeed;
 		
 		// 생성자
-		public WordThread(int index) {
+		public WordThread(int index, int dropSpeed) {
 			this.index = index;
+			this.dropSpeed = dropSpeed;
 		}
 		
 		// 스레드 제거 함수
@@ -242,7 +245,7 @@ public class GameGround extends JPanel{
 						}
 						
 						// 1초에 한번씩 드롭
-						sleep(1000);
+						sleep(dropSpeed);
 					} catch (InterruptedException e) {
 						return;
 					}

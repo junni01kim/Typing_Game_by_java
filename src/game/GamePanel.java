@@ -42,11 +42,13 @@ public class GamePanel extends JPanel {
 		
 		vPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		vPane.setDividerLocation(300);
+		vPane.setDividerSize(0);
 		
 		vPane.setTopComponent(scorePanel); 
 		vPane.setBottomComponent(editPanel);
 		hPane.setRightComponent(vPane);
 		hPane.setLeftComponent(gameGround);
+		hPane.setDividerSize(0);
 	}
 	
 }

@@ -2,6 +2,7 @@ package game;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Label;
@@ -35,11 +36,12 @@ public class EditPanel extends JPanel {
 	public EditPanel(GameFrame gameFrame) {
 		this.gameFrame = gameFrame;
 		rankingSource = gameFrame.getRankingSource();
-		//this.rankingSource = rankingSource;
+		
+		FlowLayout editPanelLayout = new FlowLayout(FlowLayout.CENTER);
+		editPanelLayout.setVgap(3);
 		
 		// Panel狼 加己汲沥
-		setLayout(new FlowLayout(FlowLayout.CENTER));
-		//setBackground(Color.CYAN);
+		setLayout(editPanelLayout);
 		add(wordInput);
 		
 		JButton findNicknameButton = new JButton("Find");
@@ -50,6 +52,8 @@ public class EditPanel extends JPanel {
 		commentRenewButton.addActionListener(new commentRenewActionListener());
 		add(commentRenewButton);
 		
+		Label scoreTable = new Label("                               己利钎                              ");
+		add(scoreTable);
 		add(nicknameLabel);
 		add(rankLabel);
 		add(topScoreLabel);

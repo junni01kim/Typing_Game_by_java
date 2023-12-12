@@ -5,10 +5,17 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,6 +40,7 @@ public class GameFrame extends JFrame {
 	private TextSource textSource = new TextSource();
 	private GameGround gameGround = new GameGround(this);
 	private GamePanel gamePanel = new GamePanel(this);
+	private Clip backgroundClip;
 	
 	// setter함수
 	public void setLoginSource(LoginSource loginSource) { this.loginSource = loginSource; }
@@ -55,37 +63,24 @@ public class GameFrame extends JFrame {
 		// Frame의 속성설정
 		setTitle("게임");
 		setSize(800, 600);
-		makeMenu();
 		makeToolbar();
 		getContentPane().add(gamePanel, BorderLayout.CENTER);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		
+		loadAudio("BackgroundSound.wav");
 	}
 	
-	// 메뉴바 생성 함수(필요 X)
-	private void makeMenu() {
-		JMenuBar mb = new JMenuBar();
-		this.setJMenuBar(mb);
-		
-		JMenu fileMenu = new JMenu("File");
-		fileMenu.add(new JMenuItem("Open"));
-		fileMenu.add(new JMenuItem("Save"));
-		fileMenu.add(new JMenuItem("Save As"));
-		fileMenu.addSeparator();
-		JMenuItem exitItem = new JMenuItem("Exit");
-		exitItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		fileMenu.add(exitItem);
-		mb.add(fileMenu);
-		
-		JMenu editMenu = new JMenu("Edit");
-		editMenu.add(new JMenuItem("insert"));
-		editMenu.add(new JMenuItem("replace"));
-		mb.add(editMenu);
+	private void loadAudio(String pathName) {
+		try {
+			backgroundClip = AudioSystem.getClip();
+			File audioFile = new File(pathName);
+			AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+			backgroundClip.open(audioStream);
+		}
+		catch(LineUnavailableException e) {e.printStackTrace();}
+		catch(UnsupportedAudioFileException e) {e.printStackTrace();}
+		catch(IOException e) {e.printStackTrace();}
 	}
 	
 	// 툴바 생성 함수
@@ -128,6 +123,12 @@ public class GameFrame extends JFrame {
 				for(int i=0;i<getScorePanel().getLabelLength();i++) {
 					getScorePanel().getLabel(i).setText("");
 				}
+				
+				// ScorePanel에 작성된 그림 전체 삭제(백그라운드 제외)
+				getScorePanel().getCenterPanel().repaint();
+				
+				backgroundClip.start();
+				
 				myButton.setText("Stop");
 				if(bDiffculty.getText().equals("Easy"))
 					gameGround.startRoundThread(1000);
@@ -147,6 +148,7 @@ public class GameFrame extends JFrame {
 				
 				myButton.setText("Play");
 				gameGround.getRoundThread().delete();
+				backgroundClip.stop();
 			}
 		}
 	}

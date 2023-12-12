@@ -36,7 +36,7 @@ public class ScorePanel extends JPanel {
 	}
 	
 	// scorePanel에 들어가야 할 이미지가 BorderLayout이기에 paintComponent에서 분할하여 그리기
-	class CenterPanel extends JPanel {
+	public class CenterPanel extends JPanel {
 		private ImageIcon icon = new ImageIcon("ScorePanel.jpg");
 		private Image img = icon.getImage();
 
@@ -49,20 +49,20 @@ public class ScorePanel extends JPanel {
 		// 정답일 때 동그라미 표시
 		public void printCircle(Graphics g, int index) {
 			g.setColor(Color.RED);
-			if(index%2==0)
-				g.drawOval(22, 81+11*index, 13, 13);
+			if(index <= 9)
+				g.drawOval(22, 81+22*index, 13, 13);
 			else
-				g.drawOval(148, 81+11*(index-1), 13, 13);
+				g.drawOval(153, 81+22*(index-10), 13, 13);
 			g.setColor(Color.BLACK);
 		}
 		
 		// 틀렸을 때 빗금 표시
 		public void printSlash(Graphics g, int index) {
 			g.setColor(Color.RED);
-			if(index%2==0)
-				g.drawLine(22, 81+11*index, 22+13, 81+11*index+13);
+			if(index <= 9)
+				g.drawLine(22, 81+22*index, 22+13, 81+22*index+13);
 			else
-				g.drawLine(148, 81+11*(index-1), 148+13, 81+11*(index-1)+13);
+				g.drawLine(153, 81+22*(index-10), 153+13, 81+22*(index-10)+13);
 			g.setColor(Color.BLACK);
 		}
 	}
@@ -72,6 +72,7 @@ public class ScorePanel extends JPanel {
 	public int getLabelLength() {return label.length;}
 	public JLabel getLabel(int index) {return label[index];}
 	public String getNickname() {return nickname.getText();}
+	public JPanel getCenterPanel() {return centerPanel;}
 	
 	// 생성자
 	public ScorePanel(GameFrame gameFrame) {
@@ -89,11 +90,11 @@ public class ScorePanel extends JPanel {
 		for(int i=0;i<label.length;i++) {
 			label[i] = new JLabel("");
 			label[i].setSize(100,20);
-			if(i%2==0) {
-				label[i].setLocation(40, 46+11*i);
+			if(i <= 9) {
+				label[i].setLocation(40, 46+22*i);
 			}
 			else {
-				label[i].setLocation(167, 46+11*(i-1));
+				label[i].setLocation(175, 46+22*(i-10));
 			}
 			centerPanel.add(label[i]);
 		}
