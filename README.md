@@ -1,5 +1,6 @@
 # Typing_Game_by_java
 해당 프로그램은 자바로 만든 시험테마의 타이핑 게임입니다.
+[데모영상 링크](https://www.youtube.com/watch?v=QSi4az88S-Q)
 
 게임을 시작하면 총 20개의 단어가 등장하며, 모든 단어가 화면에서 사라지면 시험이 끝나게 됩니다.
 
